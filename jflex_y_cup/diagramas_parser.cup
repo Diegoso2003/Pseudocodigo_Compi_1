@@ -1,0 +1,119 @@
+package com.example.diagramasdeflujo.analizadores;
+
+terminal		MAS, MENOS, POR, SIGNODIVI, PARENAPER, PARENCERRA, SEPARADOR, DEFAULT, ASIGNACION, DELIMIT, ASIGINDI, VAR, MOSTRAR, LEER,
+			MIENTRAS, SI, HACER, ENTONCES, INICIO, FIN, FINMIENTRAS, FINSI, OPERALOGNEG, OPERALOG, SUMA, RESTA, MULTI, DIVI, COMA
+			;
+terminal Integer	NUMERO, COLORTEXTO, COLOR, FIGURA, LETRA, TFIGURA, TLETRA, LETRASIZE
+			;
+terminal Double		DECIMAL
+			;
+terminal String		HEXADECIMAL, IDENT, CADENA, OPERARELA
+			;
+non terminal Double	expr, term, factor
+			;
+non terminal		codigo, configuracion, mientras, condicional, condicion, pseudocodigo, instrucciones, ciclo, bloque, instruccion, finalmientras,
+			fincondicional, expr2, term2, factor2, condiciones, instruccion_config
+			;
+non terminal String	color
+			;
+			
+start with codigo;
+
+codigo ::= pseudocodigo SEPARADOR configuracion
+	| error SEPARADOR configuracion
+	;
+	
+pseudocodigo ::= INICIO instrucciones FIN
+	;
+	
+instrucciones ::= instrucciones instruccion
+	| instrucciones ciclo
+	| ciclo
+	| instruccion
+	;
+	
+instruccion ::= VAR IDENT DELIMIT
+	| VAR IDENT ASIGNACION expr2 DELIMIT
+	| MOSTRAR IDENT DELIMIT
+	| MOSTRAR CADENA DELIMIT
+	| LEER IDENT DELIMIT
+	| error DELIMIT
+	;
+	
+ciclo ::= mientras
+	| condicional
+	;
+	
+mientras ::= MIENTRAS PARENAPER condiciones PARENCERRA HACER bloque finalmientras
+	;
+	
+condicional ::= SI PARENAPER condiciones PARENCERRA ENTONCES bloque fincondicional
+	;
+	
+fincondicional ::= FINSI
+	| FIN SI
+	;
+	
+bloque ::= bloque instruccion
+	| instruccion
+	;
+	
+finalmientras ::= FINMIENTRAS
+	| FIN MIENTRAS
+	;
+	
+condiciones ::= condicion OPERALOG condicion
+	| condiciones OPERALOG condicion
+	;
+	
+condicion ::= expr2 OPERARELA expr2
+	| OPERALOGNEG PARENAPER condicion PARENCERRA
+	;
+
+expr2 ::= expr2 SUMA term2
+        | expr2 RESTA term2
+        | term
+        ;
+
+term2 ::= term2 MULTI factor2
+        | term2 DIVI factor2
+        | factor2
+        ;
+
+factor2 ::= NUMERO
+	| DECIMAL
+	| IDENT
+        | PARENAPER expr2 PARENCERRA
+        ;
+
+configuracion ::= configuracion instruccion_config
+	| instruccion_config
+	;
+	
+instruccion_config ::= DEFAULT ASIGNACION NUMERO DELIMIT
+	| COLORTEXTO ASIGNACION color ASIGINDI NUMERO DELIMIT
+	| COLOR ASIGNACION color ASIGINDI NUMERO DELIMIT
+	| FIGURA ASIGNACION TFIGURA ASIGINDI NUMERO DELIMIT
+	| LETRA ASIGNACION TLETRA ASIGINDI NUMERO DELIMIT
+	| LETRASIZE ASIGNACION expr ASIGINDI NUMERO DELIMIT
+	| error DELIMIT
+	;
+	
+color ::= HEXADECIMAL
+	| expr COMA expr COMA expr
+	;
+			
+expr ::= expr MAS term
+        | expr MENOS term
+        | term
+        ;
+
+term ::= term POR factor
+        | term SIGNODIVI factor
+        | factor
+        ;
+
+factor ::= NUMERO
+	| DECIMAL
+        | PARENAPER expr PARENCERRA
+        ;
