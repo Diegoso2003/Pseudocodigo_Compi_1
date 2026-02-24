@@ -127,9 +127,9 @@ Identifier = (_|{Letra})(_|{Letra}|{Numero})*
 	"ELIPSE"						{ return symbol(sym.TFIGURA, Figura.ELIPSE); }
 	"CIRCULO"						{ return symbol(sym.TFIGURA, Figura.CIRCULO); }
 	"PARALELOGRAMO"						{ return symbol(sym.TFIGURA, Figura.PARALELOGRAMO); }
+	"RECTANGULO_REDONDEADO"					{ return symbol(sym.TFIGURA, Figura.RECTANGULO_REDONDEADO); }
 	"RECTANGULO"						{ return symbol(sym.TFIGURA, Figura.RECTANGULO); }
 	"ROMBO"							{ return symbol(sym.TFIGURA, Figura.ROMBO); }
-	"RECTANGULO_REDONDEADO"					{ return symbol(sym.TFIGURA, Figura.RECTANGULO_REDONDEADO); }
 	"ARIAL"							{ return symbol(sym.TLETRA, Letra.ARIAL); }
 	"TIMES_NEW_ROMAN"					{ return symbol(sym.TLETRA, Letra.TIMES); }
 	"COMICS_SAM"						{ return symbol(sym.TLETRA, Letra.COMICS); }

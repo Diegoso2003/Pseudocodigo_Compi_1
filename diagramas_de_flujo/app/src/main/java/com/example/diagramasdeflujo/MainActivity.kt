@@ -14,12 +14,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.*
 import androidx.compose.material3.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import com.example.diagramasdeflujo.ui.theme.DiagramasDeFlujoTheme
 
 class MainActivity : ComponentActivity() {
@@ -48,38 +54,47 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 
 @Composable
 fun AbrirArchivo() {
-
     val context = LocalContext.current
-    var contenido by remember { mutableStateOf("") }
-
+    var texto by remember {mutableStateOf("")}
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenDocument()
     ) { uri: Uri? ->
 
         uri?.let {
             context.contentResolver.openInputStream(it)?.use { inputStream ->
-                contenido = inputStream.bufferedReader().readText()
+                texto = inputStream.bufferedReader().readText()
             }
         }
     }
 
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
     ) {
+        OutlinedTextField(
+            value = texto,
+            onValueChange = { texto = it },
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth(),
+            label = { Text("Escribe el pseudocódigo aquí") }
+        )
 
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Spacer(modifier = Modifier.height(16.dp))
 
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
             Button(onClick = {
                 launcher.launch(arrayOf("*/*"))
             }) {
                 Text("Abrir archivo")
             }
 
-            Text("o")
-
             Button(onClick = {}) {
-                Text("Escribir pseudocódigo")
+                Text("Crear diagrama")
             }
         }
     }
