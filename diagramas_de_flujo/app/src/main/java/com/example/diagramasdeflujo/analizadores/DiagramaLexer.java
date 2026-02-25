@@ -4,11 +4,14 @@
 
 package com.example.diagramasdeflujo.analizadores;
 
+import java_cup.runtime.*;
 import com.example.diagramasdeflujo.enums.Inst;
 import com.example.diagramasdeflujo.enums.Letra;
 import com.example.diagramasdeflujo.enums.Figura;
-
-import java_cup.runtime.*;
+import com.example.diagramasdeflujo.enums.TipoEnum;
+import com.example.diagramasdeflujo.backend.MensajeError;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @SuppressWarnings("fallthrough")
@@ -455,6 +458,7 @@ public class DiagramaLexer implements java_cup.runtime.Scanner {
 	private StringBuilder texto = new StringBuilder();
 	private int linea;
 	private int columna;
+	private List<MensajeError> errores = new ArrayList<>();
 	
 	private Symbol symbol(int type){
         	return new Symbol(type, yyline+1, yycolumn+1);
@@ -478,14 +482,23 @@ public class DiagramaLexer implements java_cup.runtime.Scanner {
     	
     	private void reportarErrorLexico(){
     		int estado = yystate();
+    		MensajeError error = new MensajeError(TipoEnum.LEXICO);
+            	error.setColumna(yycolumn+1);
+            	error.setLinea(yyline+1);
     		if (estado == 0 || estado == 3){
-    			// simbolo no reconocido en pseudocodigo
+    			error.setDescripcion("simbolo no reconocido en pseudocodigo");
+              		error.setLexema(yytext());
     		} else if (estado == 1){
-    			// simbolo no reconocido en configuracion
+    			error.setDescripcion("simbolo no reconocido en configuracion");
+              		error.setLexema(yytext());
     		} else {
-    			// cadena no cerrada
+    			error.setDescripcion("cadena no cerrada");
     		}
     	}
+    	
+    	public List<MensajeError> getErrores(){
+          	return errores;
+        }
 
 
 
@@ -925,7 +938,7 @@ public class DiagramaLexer implements java_cup.runtime.Scanner {
           // fall through
           case 69: break;
           case 3:
-            { return symbol(sym.OPERALOGNEG);
+            { return symbol(sym.OPERALOGNEG, yytext());
             }
           // fall through
           case 70: break;
@@ -940,32 +953,32 @@ public class DiagramaLexer implements java_cup.runtime.Scanner {
           // fall through
           case 72: break;
           case 6:
-            { return symbol(sym.PARENAPER);
+            { return symbol(sym.PARENAPER, yytext());
             }
           // fall through
           case 73: break;
           case 7:
-            { return symbol(sym.PARENCERRA);
+            { return symbol(sym.PARENCERRA, yytext());
             }
           // fall through
           case 74: break;
           case 8:
-            { return symbol(sym.MULTI);
+            { return symbol(sym.MULTI, yytext());
             }
           // fall through
           case 75: break;
           case 9:
-            { return symbol(sym.SUMA);
+            { return symbol(sym.SUMA, yytext());
             }
           // fall through
           case 76: break;
           case 10:
-            { return symbol(sym.RESTA);
+            { return symbol(sym.RESTA, yytext());
             }
           // fall through
           case 77: break;
           case 11:
-            { return symbol(sym.DIVI);
+            { return symbol(sym.DIVI, yytext());
             }
           // fall through
           case 78: break;
@@ -980,7 +993,7 @@ public class DiagramaLexer implements java_cup.runtime.Scanner {
           // fall through
           case 80: break;
           case 14:
-            { yybegin(INSTRUCCION); return symbol(sym.ASIGNACION);
+            { yybegin(INSTRUCCION); return symbol(sym.ASIGNACION, yytext());
             }
           // fall through
           case 81: break;
@@ -995,37 +1008,37 @@ public class DiagramaLexer implements java_cup.runtime.Scanner {
           // fall through
           case 83: break;
           case 17:
-            { return symbol(sym.POR);
+            { return symbol(sym.POR, yytext());
             }
           // fall through
           case 84: break;
           case 18:
-            { return symbol(sym.MAS);
+            { return symbol(sym.MAS, yytext());
             }
           // fall through
           case 85: break;
           case 19:
-            { return symbol(sym.COMA);
+            { return symbol(sym.COMA, yytext());
             }
           // fall through
           case 86: break;
           case 20:
-            { return symbol(sym.MENOS);
+            { return symbol(sym.MENOS, yytext());
             }
           // fall through
           case 87: break;
           case 21:
-            { return symbol(sym.SIGNODIVI);
+            { return symbol(sym.SIGNODIVI, yytext());
             }
           // fall through
           case 88: break;
           case 22:
-            { return symbol(sym.ASIGNACION);
+            { return symbol(sym.ASIGNACION, yytext());
             }
           // fall through
           case 89: break;
           case 23:
-            { return symbol(sym.ASIGINDI);
+            { return symbol(sym.ASIGINDI, yytext());
             }
           // fall through
           case 90: break;
@@ -1070,7 +1083,7 @@ public class DiagramaLexer implements java_cup.runtime.Scanner {
           // fall through
           case 98: break;
           case 32:
-            { yybegin(CONFIGURACION); return symbol(sym.SEPARADOR);
+            { yybegin(CONFIGURACION); return symbol(sym.SEPARADOR, yytext());
             }
           // fall through
           case 99: break;
@@ -1120,7 +1133,7 @@ public class DiagramaLexer implements java_cup.runtime.Scanner {
           // fall through
           case 108: break;
           case 42:
-            { return symbol(sym.HEXADECIMAL, yytext().substring(1));
+            { return symbol(sym.HEXADECIMAL, yytext());
             }
           // fall through
           case 109: break;
@@ -1145,22 +1158,22 @@ public class DiagramaLexer implements java_cup.runtime.Scanner {
           // fall through
           case 113: break;
           case 47:
-            { return symbol(sym.COLOR, Inst.SI);
+            { return symbol(sym.COLOR, new DatosConfig(yytext(), Inst.SI));
             }
           // fall through
           case 114: break;
           case 48:
-            { return symbol(sym.LETRA, Inst.SI);
+            { return symbol(sym.LETRA, new DatosConfig(yytext(), Inst.SI));
             }
           // fall through
           case 115: break;
           case 49:
-            { return symbol(sym.FIGURA, Inst.SI);
+            { return symbol(sym.FIGURA, new DatosConfig(yytext(), Inst.SI));
             }
           // fall through
           case 116: break;
           case 50:
-            { return symbol(sym.TLETRA, Letra.COMICS);
+            { return symbol(sym.TLETRA, Letra.COMICS_SAM);
             }
           // fall through
           case 117: break;
@@ -1175,12 +1188,12 @@ public class DiagramaLexer implements java_cup.runtime.Scanner {
           // fall through
           case 119: break;
           case 53:
-            { return symbol(sym.COLOR, Inst.BLOQUE);
+            { return symbol(sym.COLOR, new DatosConfig(yytext(), Inst.BLOQUE));
             }
           // fall through
           case 120: break;
           case 54:
-            { return symbol(sym.LETRA, Inst.BLOQUE);
+            { return symbol(sym.LETRA, new DatosConfig(yytext(), Inst.BLOQUE));
             }
           // fall through
           case 121: break;
@@ -1190,57 +1203,57 @@ public class DiagramaLexer implements java_cup.runtime.Scanner {
           // fall through
           case 122: break;
           case 56:
-            { return symbol(sym.FIGURA, Inst.BLOQUE);
+            { return symbol(sym.FIGURA, new DatosConfig(yytext(), Inst.BLOQUE));
             }
           // fall through
           case 123: break;
           case 57:
-            { return symbol(sym.LETRASIZE, Inst.SI);
+            { return symbol(sym.LETRASIZE, new DatosConfig(yytext(), Inst.SI));
             }
           // fall through
           case 124: break;
           case 58:
-            { return symbol(sym.COLOR, Inst.MIENTRAS);
+            { return symbol(sym.COLOR, new DatosConfig(yytext(), Inst.MIENTRAS));
             }
           // fall through
           case 125: break;
           case 59:
-            { return symbol(sym.COLORTEXTO, Inst.SI);
+            { return symbol(sym.COLORTEXTO, new DatosConfig(yytext(), Inst.SI));
             }
           // fall through
           case 126: break;
           case 60:
-            { return symbol(sym.LETRA, Inst.MIENTRAS);
+            { return symbol(sym.LETRA, new DatosConfig(yytext(), Inst.MIENTRAS));
             }
           // fall through
           case 127: break;
           case 61:
-            { return symbol(sym.TLETRA, Letra.TIMES);
+            { return symbol(sym.TLETRA, Letra.TIMES_NEW_ROMAN);
             }
           // fall through
           case 128: break;
           case 62:
-            { return symbol(sym.FIGURA, Inst.MIENTRAS);
+            { return symbol(sym.FIGURA, new DatosConfig(yytext(), Inst.MIENTRAS));
             }
           // fall through
           case 129: break;
           case 63:
-            { return symbol(sym.LETRASIZE, Inst.BLOQUE);
+            { return symbol(sym.LETRASIZE, new DatosConfig(yytext(), Inst.BLOQUE));
             }
           // fall through
           case 130: break;
           case 64:
-            { return symbol(sym.COLORTEXTO, Inst.BLOQUE);
+            { return symbol(sym.COLORTEXTO, new DatosConfig(yytext(), Inst.BLOQUE));
             }
           // fall through
           case 131: break;
           case 65:
-            { return symbol(sym.LETRASIZE, Inst.MIENTRAS);
+            { return symbol(sym.LETRASIZE, new DatosConfig(yytext(), Inst.MIENTRAS));
             }
           // fall through
           case 132: break;
           case 66:
-            { return symbol(sym.COLORTEXTO, Inst.MIENTRAS);
+            { return symbol(sym.COLORTEXTO, new DatosConfig(yytext(), Inst.MIENTRAS));
             }
           // fall through
           case 133: break;

@@ -1,21 +1,132 @@
 package com.example.diagramasdeflujo.analizadores;
 
-terminal		MAS, MENOS, POR, SIGNODIVI, PARENAPER, PARENCERRA, SEPARADOR, DEFAULT, ASIGNACION, DELIMIT, ASIGINDI, VAR, MOSTRAR, LEER,
-			MIENTRAS, SI, HACER, ENTONCES, INICIO, FIN, FINMIENTRAS, FINSI, OPERALOGNEG, OPERALOG, SUMA, RESTA, MULTI, DIVI, COMA
-			;
-terminal Integer	NUMERO, COLORTEXTO, COLOR, FIGURA, LETRA, TFIGURA, TLETRA, LETRASIZE
-			;
-terminal Double		DECIMAL
-			;
-terminal String		HEXADECIMAL, IDENT, CADENA, OPERARELA
-			;
-non terminal Double	expr, term, factor
-			;
-non terminal		codigo, configuracion, mientras, condicional, condicion, pseudocodigo, instrucciones, ciclo, bloque, instruccion, finalmientras,
-			fincondicional, expr2, term2, factor2, condiciones, instruccion_config
-			;
-non terminal String	color
-			;
+import com.example.diagramasdeflujo.enums.TipoEnum;
+import com.example.diagramasdeflujo.enums.Inst;
+import com.example.diagramasdeflujo.backend.MensajeError;
+import com.example.diagramasdeflujo.backend.Pseudocodigo;
+import com.example.diagramasdeflujo.backend.estructuras.Bloque;
+import com.example.diagramasdeflujo.backend.estructuras.Mientras;
+import com.example.diagramasdeflujo.backend.estructuras.Si;
+import com.example.diagramasdeflujo.backend.ReporteEstructura;
+import java_cup.runtime.*;
+import java.util.List;
+import java.util.ArrayList;
+
+parser code {:
+
+    private DiagramaLexer lex;
+    private List<MensajeError> syntaxErrors;
+    private Pseudocodigo pseudo;
+
+    public DiagramaParser(DiagramaLexer lex, List<MensajeError> syntaxErrors, Pseudocodigo pseudo){
+        super(lex);
+        this.syntaxErrors = syntaxErrors;
+        this.pseudo = pseudo;
+    }
+
+    public void agregarTexto(StringBuilder texto, List<String> cadenas){
+    	for(String cadena: cadenas){
+    		texto.append(cadena);
+    	}
+    }
+    
+    public String pasarATexto(List<String> lista){
+    	StringBuilder texto = new StringBuilder();
+    	agregarTexto(texto, lista);
+    	return texto.toString();
+    }
+
+    public DiagramaLexer getLexer(){
+        return this.lex;
+    }
+
+    public List<MensajeError> getSyntaxErrors(){
+        return this.syntaxErrors;
+    }
+
+    public void syntax_error(Symbol cur_token){
+        MensajeError error = new MensajeError(TipoEnum.SINTACTICO);
+        
+        if(cur_token.value != null) {
+        	error.setLexema(cur_token.value.toString());
+        } else {
+        	error.setLexema(symbl_name_from_id(cur_token.sym));
+        }
+	error.setLinea(cur_token.left);
+	error.setColumna(cur_token.right);
+        
+        if( expected_token_ids().isEmpty()  ){
+        	error.setDescripcion("ya no se esperaba ningún símbolo");
+        } else {
+        	StringBuilder mssBuilder = new StringBuilder();
+            	mssBuilder.append("Se esperaba: ");
+            	for(Integer expected_token_id : expected_token_ids() ){ 
+                	if(!symbl_name_from_id(expected_token_id).equals("error")){
+                    	mssBuilder.append(symbl_name_from_id(expected_token_id));
+                    	mssBuilder.append(", ");
+                	}
+            	}
+            	error.setDescripcion(mssBuilder.toString());
+        }
+    }
+
+    public void report_error(String message, Object info){
+        try{
+            	Symbol cur_token = (Symbol) info;
+            	MensajeError error = new MensajeError(TipoEnum.SINTACTICO);
+            	if(cur_token != null){
+            		error.setLinea(cur_token.left);
+            		error.setColumna(cur_token.right);
+        		if(cur_token.value != null){
+        			error.setLexema(cur_token.value.toString());
+        		} else {
+        			error.setLexema(symbl_name_from_id(cur_token.sym));
+        		}
+            	}
+
+            	if(message != null){
+                	error.setDescripcion(message);
+            	}
+            syntaxErrors.add(error);
+        } catch (Exception e){
+        	MensajeError error = new MensajeError(TipoEnum.SINTACTICO);
+        	if(message != null){
+                	error.setDescripcion(message);
+                	syntaxErrors.add(error);
+            	}
+        }
+    }
+
+    public void unrecovered_syntax_error(Symbol cur_token){
+        MensajeError error = new MensajeError(TipoEnum.SINTACTICO);
+        error.setDescripcion("Error que no se puede recuperar");
+        syntaxErrors.add(error);
+    }
+
+:}
+
+terminal			MAS, MENOS, POR, SIGNODIVI, PARENAPER, PARENCERRA, SEPARADOR, DEFAULT, ASIGNACION, DELIMIT, ASIGINDI, VAR, MOSTRAR, LEER,
+				MIENTRAS, SI, HACER, ENTONCES, INICIO, FIN, FINMIENTRAS, FINSI, OPERALOGNEG, OPERALOG, SUMA, RESTA, MULTI, DIVI, COMA
+				;
+terminal Integer		NUMERO, COLORTEXTO, COLOR, FIGURA, LETRA, TFIGURA, TLETRA, LETRASIZE
+				;
+terminal Double			DECIMAL
+				;
+terminal String			HEXADECIMAL, IDENT, CADENA, OPERARELA
+				;
+non terminal Double		expr, term, factor
+				;
+non terminal			codigo, configuracion, mientras, condicional, pseudocodigo, instrucciones, ciclo, finalmientras,
+				fincondicional, instruccion_config
+				;
+non terminal Bloque		bloque
+				;
+non terminal String		color, instruccion
+				;
+non terminal StringBuilder	condiciones, condicion
+				;
+non terminal List<String> 	expr2, term2, factor2
+				;
 			
 start with codigo;
 
@@ -26,17 +137,17 @@ codigo ::= pseudocodigo SEPARADOR configuracion
 pseudocodigo ::= INICIO instrucciones FIN
 	;
 	
-instrucciones ::= instrucciones instruccion
+instrucciones ::= instrucciones instruccion:n1							{: pseudo.agregarInstruccion(n1); :}
 	| instrucciones ciclo
 	| ciclo
-	| instruccion
+	| instruccion:n1									{: pseudo.agregarInstruccion(n1); :}
 	;
 	
-instruccion ::= VAR IDENT DELIMIT
-	| VAR IDENT ASIGNACION expr2 DELIMIT
-	| MOSTRAR IDENT DELIMIT
-	| MOSTRAR CADENA DELIMIT
-	| LEER IDENT DELIMIT
+instruccion ::= VAR IDENT:n1 DELIMIT								{: RESULT = "VAR " + n1; :}
+	| VAR IDENT:n1 ASIGNACION expr2:n2 DELIMIT						{: RESULT = "VAR " + n1 + " = " + pasarATexto(n2); :}
+	| MOSTRAR IDENT:n1 DELIMIT								{: RESULT = "MOSTRAR " + n1; :}
+	| MOSTRAR CADENA:n1 DELIMIT								{: RESULT = "MOSTRAR " + n1; :}
+	| LEER IDENT:n1 DELIMIT									{: RESULT = "LEER " + n1; :}
 	| error DELIMIT
 	;
 	
@@ -44,46 +155,52 @@ ciclo ::= mientras
 	| condicional
 	;
 	
-mientras ::= MIENTRAS PARENAPER condiciones PARENCERRA HACER bloque finalmientras
+mientras ::= MIENTRAS:n0 PARENAPER condiciones:n1 PARENCERRA HACER bloque:n2 finalmientras	{: pseudo.agregarAccion(new Mientras(n1.toString(), n2)); 
+										pseudo.agregarReporteDeEstructura(new ReporteEstructura(Inst.MIENTRAS, n0left, n1.toString()));
+												:}
 	;
 	
-condicional ::= SI PARENAPER condiciones PARENCERRA ENTONCES bloque fincondicional
+condicional ::= SI:n0 PARENAPER condiciones:n1 PARENCERRA ENTONCES bloque:n2 fincondicional	{: pseudo.agregarAccion(new Si(n1.toString(), n2));
+										pseudo.agregarReporteDeEstructura(new ReporteEstructura(Inst.MIENTRAS, n0left, n1.toString()));
+												:}
 	;
 	
 fincondicional ::= FINSI
 	| FIN SI
 	;
 	
-bloque ::= bloque instruccion
-	| instruccion
+bloque ::= bloque:n1 instruccion:n2								{: n1.agregarInstruccion(n2); RESULT = n1; :}
+	| instruccion:n1									{: RESULT = new Bloque(n1); :}
 	;
 	
 finalmientras ::= FINMIENTRAS
 	| FIN MIENTRAS
 	;
 	
-condiciones ::= condicion OPERALOG condicion
-	| condiciones OPERALOG condicion
+condiciones ::= condicion:n1 OPERALOG:n2 condicion:n3						{: RESULT = n1.append(" ").append(n2).append(" ").append(n3); :}
+	| condiciones:n1 OPERALOG:n2 condicion:n3						{: RESULT = n1.append(" ").append(n2).append(" ").append(n3); :}
 	;
 	
-condicion ::= expr2 OPERARELA expr2
-	| OPERALOGNEG PARENAPER condicion PARENCERRA
+condicion ::= expr2:n1 OPERARELA:n2 expr2:n3							{: 
+											RESULT = new StringBuilder(pasarATexto(n1)).append(" ").append(n2).append(pasarATexto(n3)); 
+												:}
+	| OPERALOGNEG PARENAPER condicion:n1 PARENCERRA						{: RESULT = new StringBuilder("!(").append(n1).append(")"); :}
 	;
 
-expr2 ::= expr2 SUMA term2
-        | expr2 RESTA term2
-        | term
+expr2 ::= expr2:n1 SUMA term2:n2								{: n1.add(" + "); n1.addAll(n2); RESULT = n1; :}
+        | expr2:n1 RESTA term2:n2								{: n1.add(" - "); n1.addAll(n2); RESULT = n1; :}
+        | term2:n1										{: RESULT = n1; :}
         ;
 
-term2 ::= term2 MULTI factor2
-        | term2 DIVI factor2
-        | factor2
+term2 ::= term2:n1 MULTI factor2:n2								{: n1.add(" * "); n1.addAll(n2); RESULT = n1; :}
+        | term2:n1 DIVI factor2:n2								{: n1.add(" / "); n1.addAll(n2); RESULT = n1; :}
+        | factor2:n1										{: RESULT = n1; :}
         ;
 
-factor2 ::= NUMERO
-	| DECIMAL
-	| IDENT
-        | PARENAPER expr2 PARENCERRA
+factor2 ::= NUMERO:n1										{: RESULT = new ArrayList<>(); RESULT.add(n1.toString()); :}
+	| DECIMAL:n1										{: RESULT = new ArrayList<>(); RESULT.add(n1.toString()); :}
+	| IDENT:n1										{: RESULT = new ArrayList<>(); RESULT.add(n1); :}
+        | PARENAPER expr2:n1 PARENCERRA								{: RESULT = new ArrayList<>(); RESULT.add("("); RESULT.addAll(n1); RESULT.add(")"); :}
         ;
 
 configuracion ::= configuracion instruccion_config

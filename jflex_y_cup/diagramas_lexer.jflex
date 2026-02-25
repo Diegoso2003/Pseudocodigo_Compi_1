@@ -4,6 +4,9 @@ import java_cup.runtime.*;
 import com.example.diagramasdeflujo.enums.Inst;
 import com.example.diagramasdeflujo.enums.Letra;
 import com.example.diagramasdeflujo.enums.Figura;
+import com.example.diagramasdeflujo.enums.TipoEnum;
+import com.example.diagramasdeflujo.backend.MensajeError;
+import java.util.List;
 
 %%
 
@@ -21,6 +24,7 @@ import com.example.diagramasdeflujo.enums.Figura;
 	private StringBuilder texto = new StringBuilder();
 	private int linea;
 	private int columna;
+	private List<MensajeError> errores;
 	
 	private Symbol symbol(int type){
         	return new Symbol(type, yyline+1, yycolumn+1);
@@ -44,13 +48,22 @@ import com.example.diagramasdeflujo.enums.Figura;
     	
     	private void reportarErrorLexico(){
     		int estado = yystate();
+    		MensajeError error = new MensajeError(TipoEnum.LEXICO);
+            	error.setColumna(yycolumn+1);
+            	error.setLinea(yyline+1);
     		if (estado == 0 || estado == 3){
-    			// simbolo no reconocido en pseudocodigo
+    			error.setDescripcion("simbolo no reconocido en pseudocodigo");
+              		error.setLexema(yytext());
     		} else if (estado == 1){
-    			// simbolo no reconocido en configuracion
+    			error.setDescripcion("simbolo no reconocido en configuracion");
+              		error.setLexema(yytext());
     		} else {
-    			// cadena no cerrada
+    			error.setDescripcion("cadena no cerrada");
     		}
+    	}
+    	
+    	public void setErrores(List<MensajeError> errores){
+    		this.errores = errores;
     	}
 
 %}
@@ -70,8 +83,8 @@ Identifier = (_|{Letra})(_|{Letra}|{Numero})*
 	.							{ texto.append(yytext()); }
 }
 
-	"("							{ return symbol(sym.PARENAPER); }
-	")"							{ return symbol(sym.PARENCERRA); }
+	"("							{ return symbol(sym.PARENAPER, yytext()); }
+	")"							{ return symbol(sym.PARENCERRA, yytext()); }
 	"#".*							{ /** ignorar comentario **/ }
 	{Decimal}						{ return symbol(sym.DECIMAL, Double.parseDouble(yytext())); }
 	{Numero}						{ return symbol(sym.NUMERO, Integer.parseInt(yytext())); }
@@ -88,7 +101,7 @@ Identifier = (_|{Letra})(_|{Letra}|{Numero})*
 	"MOSTRAR"						{ yybegin(INSTRUCCION); return symbol(sym.MOSTRAR); }
 	"LEER"							{ yybegin(INSTRUCCION); return symbol(sym.LEER); }
 	"VAR"							{ yybegin(INSTRUCCION); return symbol(sym.VAR); }
-	"="							{ yybegin(INSTRUCCION); return symbol(sym.ASIGNACION); }
+	"="							{ yybegin(INSTRUCCION); return symbol(sym.ASIGNACION, yytext()); }
 	{Identifier}						{ return symbol(sym.IDENT, yytext()); }
 	"=="							{ return symbol(sym.OPERARELA, yytext()); }
 	"!="							{ return symbol(sym.OPERARELA, yytext()); }
@@ -98,32 +111,32 @@ Identifier = (_|{Letra})(_|{Letra}|{Numero})*
 	">"							{ return symbol(sym.OPERARELA, yytext()); }
 	"&&"							{ return symbol(sym.OPERALOG, yytext()); }
 	"||"							{ return symbol(sym.OPERALOG, yytext()); }
-	"!"							{ return symbol(sym.OPERALOGNEG); }
-	"+"							{ return symbol(sym.SUMA); }
-	"-"							{ return symbol(sym.RESTA); }
-	"*"							{ return symbol(sym.MULTI); }
-	"/"							{ return symbol(sym.DIVI); }
+	"!"							{ return symbol(sym.OPERALOGNEG, yytext()); }
+	"+"							{ return symbol(sym.SUMA, yytext()); }
+	"-"							{ return symbol(sym.RESTA, yytext()); }
+	"*"							{ return symbol(sym.MULTI, yytext()); }
+	"/"							{ return symbol(sym.DIVI, yytext()); }
 	\"							{ yybegin(STRING); iniciarCadena(); }
-	"%%%%"							{ yybegin(CONFIGURACION); return symbol(sym.DIVISOR); }
+	"%%%%"							{ yybegin(CONFIGURACION); return symbol(sym.SEPARADOR, yytext()); }
 }
 
 <CONFIGURACION> {
 	"%DEFAULT"						{ return symbol(sym.DEFAULT); }
-	"%COLOR_TEXTO_SI"					{ return symbol(sym.COLORTEXTO, Inst.SI); }
-	"%COLOR_SI"						{ return symbol(sym.COLOR, Inst.SI); }
-	"%FIGURA_SI"						{ return symbol(sym.FIGURA, Inst.SI); }
-	"%LETRA_SI"						{ return symbol(sym.LETRA, Inst.SI); }
-	"%LETRA_SIZE_SI"					{ return symbol(sym.LETRASIZE, Inst.SI); }
-	"%COLOR_TEXTO_MIENTRAS"					{ return symbol(sym.COLORTEXTO, Inst.MIENTRAS); }
-	"%COLOR_MIENTRAS"					{ return symbol(sym.COLOR, Inst.MIENTRAS); }
-	"%FIGURA_MIENTRAS"					{ return symbol(sym.FIGURA, Inst.MIENTRAS); }
-	"%LETRA_MIENTRAS"					{ return symbol(sym.LETRA, Inst.MIENTRAS); }
-	"%LETRA_SIZE_MIENTRAS"					{ return symbol(sym.LETRASIZE, Inst.MIENTRAS); }
-	"%COLOR_TEXTO_BLOQUE"					{ return symbol(sym.COLORTEXTO, Inst.BLOQUE); }
-	"%COLOR_BLOQUE"						{ return symbol(sym.COLOR, Inst.BLOQUE); }
-	"%FIGURA_BLOQUE"					{ return symbol(sym.FIGURA, Inst.BLOQUE); }
-	"%LETRA_BLOQUE"						{ return symbol(sym.LETRA, Inst.BLOQUE); }
-	"%LETRA_SIZE_BLOQUE"					{ return symbol(sym.LETRASIZE, Inst.BLOQUE); }
+	"%COLOR_TEXTO_SI"					{ return symbol(sym.COLORTEXTO, new DatosConfig(yytext(), Inst.SI)); }
+	"%COLOR_SI"						{ return symbol(sym.COLOR, new DatosConfig(yytext(), Inst.SI)); }
+	"%FIGURA_SI"						{ return symbol(sym.FIGURA, new DatosConfig(yytext(), Inst.SI)); }
+	"%LETRA_SI"						{ return symbol(sym.LETRA, new DatosConfig(yytext(), Inst.SI)); }
+	"%LETRA_SIZE_SI"					{ return symbol(sym.LETRASIZE, new DatosConfig(yytext(), Inst.SI)); }
+	"%COLOR_TEXTO_MIENTRAS"					{ return symbol(sym.COLORTEXTO, new DatosConfig(yytext(), Inst.MIENTRAS)); }
+	"%COLOR_MIENTRAS"					{ return symbol(sym.COLOR, new DatosConfig(yytext(), Inst.MIENTRAS)); }
+	"%FIGURA_MIENTRAS"					{ return symbol(sym.FIGURA, new DatosConfig(yytext(), Inst.MIENTRAS)); }
+	"%LETRA_MIENTRAS"					{ return symbol(sym.LETRA, new DatosConfig(yytext(), Inst.MIENTRAS)); }
+	"%LETRA_SIZE_MIENTRAS"					{ return symbol(sym.LETRASIZE, new DatosConfig(yytext(), Inst.MIENTRAS)); }
+	"%COLOR_TEXTO_BLOQUE"					{ return symbol(sym.COLORTEXTO, new DatosConfig(yytext(), Inst.BLOQUE)); }
+	"%COLOR_BLOQUE"						{ return symbol(sym.COLOR, new DatosConfig(yytext(), Inst.BLOQUE)); }
+	"%FIGURA_BLOQUE"					{ return symbol(sym.FIGURA, new DatosConfig(yytext(), Inst.BLOQUE)); }
+	"%LETRA_BLOQUE"						{ return symbol(sym.LETRA, new DatosConfig(yytext(), Inst.BLOQUE)); }
+	"%LETRA_SIZE_BLOQUE"					{ return symbol(sym.LETRASIZE, new DatosConfig(yytext(), Inst.BLOQUE)); }
 	"ELIPSE"						{ return symbol(sym.TFIGURA, Figura.ELIPSE); }
 	"CIRCULO"						{ return symbol(sym.TFIGURA, Figura.CIRCULO); }
 	"PARALELOGRAMO"						{ return symbol(sym.TFIGURA, Figura.PARALELOGRAMO); }
@@ -131,17 +144,17 @@ Identifier = (_|{Letra})(_|{Letra}|{Numero})*
 	"RECTANGULO"						{ return symbol(sym.TFIGURA, Figura.RECTANGULO); }
 	"ROMBO"							{ return symbol(sym.TFIGURA, Figura.ROMBO); }
 	"ARIAL"							{ return symbol(sym.TLETRA, Letra.ARIAL); }
-	"TIMES_NEW_ROMAN"					{ return symbol(sym.TLETRA, Letra.TIMES); }
-	"COMICS_SAM"						{ return symbol(sym.TLETRA, Letra.COMICS); }
+	"TIMES_NEW_ROMAN"					{ return symbol(sym.TLETRA, Letra.TIMES_NEW_ROMAN); }
+	"COMICS_SAM"						{ return symbol(sym.TLETRA, Letra.COMICS_SAM); }
 	"VERDANA"						{ return symbol(sym.TLETRA, Letra.VERDANA); }
-	"="							{ return symbol(sym.ASIGNACION); }
-	"|"							{ return symbol(sym.ASIGINDI); }
-	","							{ return symbol(sym.COMA); }
-	"+"							{ return symbol(sym.MAS);}
-	"-"							{ return symbol(sym.MENOS); }
-	"*"							{ return symbol(sym.POR); }
-	"/"							{ return symbol(sym.SIGNODIVI); }
-	{Hexadecimal}						{ return symbol(sym.HEXADECIMAL, yytext().substring(1)); }
+	"="							{ return symbol(sym.ASIGNACION, yytext()); }
+	"|"							{ return symbol(sym.ASIGINDI, yytext()); }
+	","							{ return symbol(sym.COMA, yytext()); }
+	"+"							{ return symbol(sym.MAS, yytext());}
+	"-"							{ return symbol(sym.MENOS, yytext()); }
+	"*"							{ return symbol(sym.POR, yytext()); }
+	"/"							{ return symbol(sym.SIGNODIVI, yytext()); }
+	{Hexadecimal}						{ return symbol(sym.HEXADECIMAL, yytext()); }
 	\n							{ return symbol(sym.DELIMIT); }
 }
 
