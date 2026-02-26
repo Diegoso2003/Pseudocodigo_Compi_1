@@ -212,13 +212,21 @@ condicion ::= expr2:n1 OPERARELA:n2 expr2:n3							{:
 	| OPERALOGNEG PARENAPER condicion:n1 PARENCERRA						{: RESULT = new StringBuilder("!(").append(n1).append(")"); :}
 	;
 
-expr2 ::= expr2:n1 SUMA term2:n2								{: n1.add(" + "); n1.addAll(n2); RESULT = n1; :}
-        | expr2:n1 RESTA term2:n2								{: n1.add(" - "); n1.addAll(n2); RESULT = n1; :}
+expr2 ::= expr2:n1 SUMA:n0 term2:n2								{:  
+										pseudo.agregarReporteOperador(n0left, n0right, new String[]{n1.get(n1.size()-1), "+", n2.get(0)});
+										n1.add(" + "); n1.addAll(n2); RESULT = n1;:}
+        | expr2:n1 RESTA:n0 term2:n2								{:  
+        									pseudo.agregarReporteOperador(n0left, n0right, new String[]{n1.get(n1.size()-1), "-", n2.get(0)});
+        									n1.add(" - "); n1.addAll(n2); RESULT = n1;:}
         | term2:n1										{: RESULT = n1; :}
         ;
 
-term2 ::= term2:n1 MULTI factor2:n2								{: n1.add(" * "); n1.addAll(n2); RESULT = n1; :}
-        | term2:n1 DIVI factor2:n2								{: n1.add(" / "); n1.addAll(n2); RESULT = n1; :}
+term2 ::= term2:n1 MULTI:n0 factor2:n2								{:  
+										pseudo.agregarReporteOperador(n0left, n0right, new String[]{n1.get(n1.size()-1), "*", n2.get(0)});
+										n1.add(" * "); n1.addAll(n2); RESULT = n1;:}
+        | term2:n1 DIVI:n0 factor2:n2								{: 
+        									pseudo.agregarReporteOperador(n0left, n0right, new String[]{n1.get(n1.size()-1), "/", n2.get(0)});
+        									n1.add(" / "); n1.addAll(n2); RESULT = n1;:}
         | factor2:n1										{: RESULT = n1; :}
         ;
 
@@ -245,21 +253,25 @@ delimitador ::= DELIMIT
 	| delimitador DELIMIT
 	;
 	
-color ::= HEXADECIMAL:n1									{: RESULT = pseudo.hexaColor("#"+n1.subString(1)); :}
+color ::= HEXADECIMAL:n1									{: RESULT = pseudo.hexaAColor("#"+n1.substring(1)); :}
 	| expr:n1 COMA expr:n2 COMA expr:n3							{: RESULT = pseudo.rgbAColor(n1.getNumero(), n2.getNumero(), n3.getNumero()); :}
 	;
 			
-expr ::= expr:n1 MAS term:n2									{: RESULT = new OperadorMat(n1.getNumero() + n2.getNumero()); 
-												RESULT.setUltimo(n2.getUltimo()); RESULT.setPrimero(n1.getPrimero()); :}
-        | expr:n1 MENOS term:n2									{: RESULT = new OperadorMat(n1.getNumero() - n2.getNumero()); 
-												RESULT.setUltimo(n2.getUltimo()); RESULT.setPrimero(n1.getPrimero()); :}
+expr ::= expr:n1 MAS:n0 term:n2									{: RESULT = new OperadorMat(n1.getNumero() + n2.getNumero()); 
+												RESULT.setUltimo(n2.getUltimo()); RESULT.setPrimero(n1.getPrimero()); 
+										pseudo.agregarReporteOperador(n0left, n0right, new String[]{n1.getUltimo(), "+", n2.getPrimero()});:}
+        | expr:n1 MENOS:n0 term:n2									{: RESULT = new OperadorMat(n1.getNumero() - n2.getNumero()); 
+												RESULT.setUltimo(n2.getUltimo()); RESULT.setPrimero(n1.getPrimero()); 
+										pseudo.agregarReporteOperador(n0left, n0right, new String[]{n1.getUltimo(), "-", n2.getPrimero()});:}
         | term:n1										{: RESULT = n1; :}
         ;
 
-term ::= term:n1 POR factor:n2									{: RESULT = new OperadorMat(n1.getNumero() * n2.getNumero()); 
-												RESULT.setUltimo(n2.getUltimo()); RESULT.setPrimero(n1.getPrimero()); :}
-        | term:n1 SIGNODIVI factor:n2								{: RESULT = new OperadorMat(n1.getNumero() / n2.getNumero()); 
-												RESULT.setUltimo(n2.getUltimo()); RESULT.setPrimero(n1.getPrimero()); :}
+term ::= term:n1 POR:n0 factor:n2								{: RESULT = new OperadorMat(n1.getNumero() * n2.getNumero());
+												RESULT.setUltimo(n2.getUltimo()); RESULT.setPrimero(n1.getPrimero());
+										pseudo.agregarReporteOperador(n0left, n0right, new String[]{n1.getUltimo(), "*", n2.getPrimero()});:}
+        | term:n1 SIGNODIVI:n0 factor:n2							{: RESULT = new OperadorMat(n1.getNumero() / n2.getNumero()); 
+												RESULT.setUltimo(n2.getUltimo()); RESULT.setPrimero(n1.getPrimero()); 
+										pseudo.agregarReporteOperador(n0left, n0right, new String[]{n1.getUltimo(), "/", n2.getPrimero()});:}
         | factor:n1										{: RESULT = n1; :}
         ;
 

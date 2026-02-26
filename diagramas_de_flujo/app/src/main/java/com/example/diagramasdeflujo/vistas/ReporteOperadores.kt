@@ -10,8 +10,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -24,18 +28,30 @@ import androidx.navigation.NavController
 import com.example.diagramasdeflujo.Constantes
 import com.example.diagramasdeflujo.backend.Pseudocodigo
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ReporteErrores(
+fun ReporteOperadores(
     navController: NavController,
     pseudocodigo: Pseudocodigo
 ) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(Constantes.NOMBRE_APP) }
+                title = { Text(Constantes.NOMBRE_APP) },
+                navigationIcon = {
+                    IconButton(onClick = {
+                        navController.navigate(Constantes.rutaEditor)
+                    }) {
+                        Icon(
+                            imageVector = Icons.Filled.ArrowBack,
+                            contentDescription = "Volver"
+                        )
+                    }
+                }
             )
+        },
+        bottomBar = {
+            BotonesExito(navController)
         }
     ) { padding ->
         Column(
@@ -52,27 +68,25 @@ fun ReporteErrores(
                     .padding(8.dp)
                     .horizontalScroll(scrollState)
             ) {
-                Text("Lexema", modifier = Modifier.weight(1f), fontWeight = FontWeight.Bold)
+                Text("Operador", modifier = Modifier.weight(1f), fontWeight = FontWeight.Bold)
                 Text("Linea", modifier = Modifier.weight(1f), fontWeight = FontWeight.Bold)
                 Text("Columna", modifier = Modifier.weight(1f), fontWeight = FontWeight.Bold)
-                Text("Tipo", modifier = Modifier.weight(1f), fontWeight = FontWeight.Bold)
-                Text("Descripcion", modifier = Modifier.weight(1f), fontWeight = FontWeight.Bold)
+                Text("Ocurrencia", modifier = Modifier.weight(1f), fontWeight = FontWeight.Bold)
             }
 
             LazyColumn(
                 modifier = Modifier.fillMaxSize()
             ) {
-                items(pseudocodigo.errores) { error ->
+                items(pseudocodigo.reporteOperador) { operador ->
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(8.dp)
                     ) {
-                        Text(error.lexema, modifier = Modifier.weight(1f))
-                        Text(error.linea.toString(), modifier = Modifier.weight(1f))
-                        Text(error.columna.toString(), modifier = Modifier.weight(1f))
-                        Text(error.tipo.name, modifier = Modifier.weight(1f))
-                        Text(error.descripcion, modifier = Modifier.weight(1f))
+                        Text(operador.operador, modifier = Modifier.weight(1f))
+                        Text(operador.linea.toString(), modifier = Modifier.weight(1f))
+                        Text(operador.columna.toString(), modifier = Modifier.weight(1f))
+                        Text(operador.ocurrencia, modifier = Modifier.weight(1f))
                     }
                     Divider()
                 }

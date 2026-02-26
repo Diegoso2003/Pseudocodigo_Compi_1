@@ -19,6 +19,7 @@ class Pseudocodigo {
     var errores = ArrayList<MensajeError>()
     var texto:String = ""
     var reporteEstructura = ArrayList<ReporteEstructura>()
+    var reporteOperador = ArrayList<ReporteOperador>()
     var indices = arrayOf(ArrayList<Accion>(), ArrayList<Accion>(), ArrayList<Accion>()
     , ArrayList<Accion>())
     var bloque: Bloque? = null
@@ -26,11 +27,9 @@ class Pseudocodigo {
     fun agregarAccion(accion: Accion) {
         bloque = null
         accion.agregarLista(acciones, indices)
-        Log.d("MENSAJE", "agregado ${accion.tipo.name}")
     }
 
     fun agregarInstruccion(instruccion: String){
-        Log.d("MENSAJE", "agregado bloque")
         if(crearBloque()){
             bloque = Bloque(instruccion)
             bloque?.agregarLista(acciones, indices)
@@ -49,7 +48,13 @@ class Pseudocodigo {
 
     fun analizarCodigo(): Boolean{
         errores.clear()
+        reporteEstructura.clear()
+        reporteOperador.clear()
+        for(i in 0 until indices.size){
+            indices[i].clear()
+        }
         val lexer = DiagramaLexer(StringReader(texto))
+        lexer.setErrores(errores)
         val parser = DiagramaParser(lexer, this)
         bloque = null
         try {
@@ -71,43 +76,45 @@ class Pseudocodigo {
 
     fun cambiarLetra(letra: Letra, indice: Int, instru: Inst){
         var listaAux = indices[instru.ordinal]
-        if(indice <= listaAux.size){
-            listaAux.get(indice-1).setTipoLetra(letra)
+        if(indice <= listaAux.size && indice > 0){
+            listaAux.get(indice-1).cambiarTipoLetra(letra)
         }
     }
 
     fun cambiarFigura(figura: Figura, indice: Int, inst: Inst){
         var listaAux = indices[inst.ordinal]
+        Log.d("hecho","cambio figura 1")
         if(indice <= listaAux.size && indice > 0){
-            listaAux.get(indice-1).setFigura(figura)
+            listaAux.get(indice-1).cambiarFigura(figura)
+            Log.d("hecho","cambio figura 2")
         }
     }
 
     fun cambiarTamaño(tamaño: Double, indice: Int, inst: Inst){
         var listaAux = indices[inst.ordinal]
         if(indice <= listaAux.size && indice > 0){
-            listaAux.get(indice-1).setTamañoLetra(tamaño.sp)
+            listaAux.get(indice-1).`cambiarTamañoLetra`(tamaño.sp)
         }
     }
 
     fun cambiarColor(color: Object, indice: Int, inst: Inst){
         var listaAux = indices[inst.ordinal]
         if(indice <= listaAux.size && indice > 0){
-            listaAux.get(indice-1).setColor(color as Color)
+            listaAux.get(indice-1).cambiarColor(color as Color)
         }
     }
 
     fun cambiarColorTexto(color: Object, indice: Int, inst: Inst){
         var listaAux = indices[inst.ordinal]
         if(indice <= listaAux.size && indice > 0){
-            listaAux.get(indice-1).setColorTexto(color as Color)
+            listaAux.get(indice-1).cambiarColorTexto(color as Color)
         }
     }
 
     fun porDefecto(indice: Int){
         var listaAux = indices[indices.size-1]
-        if(indice <= listaAux.size && indice > 0){
-            listaAux.get(indice).porDefecto()
+        if(indice < listaAux.size && indice > 0){
+            listaAux.get(indice-1).porDefecto()
         }
     }
 
@@ -119,5 +126,18 @@ class Pseudocodigo {
         return Color(r.toInt(), g.toInt(), b.toInt())
     }
 
+    fun agregarReporteOperador(linea: Int, columna: Int, cadenas: Array<String>){
+        var reporte = ReporteOperador()
+        reporte.linea = linea
+        reporte.columna = columna
+        when(cadenas[1]){
+            "+" -> {reporte.operador = "Suma"}
+            "-" -> {reporte.operador = "Resta"}
+            "*" -> {reporte.operador = "Multiplicación"}
+            "/" -> {reporte.operador = "División"}
+        }
+        reporte.ocurrencia = "${cadenas[0]} ${cadenas[1]} ${cadenas[2]}"
+        reporteOperador.add(reporte)
+    }
 
 }

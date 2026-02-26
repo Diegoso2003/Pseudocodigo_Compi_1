@@ -11,9 +11,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.diagramasdeflujo.backend.Pseudocodigo
+import com.example.diagramasdeflujo.backend.ReporteOperador
 import com.example.diagramasdeflujo.vistas.Editor
 import com.example.diagramasdeflujo.vistas.HacerDiagrama
-import com.example.diagramasdeflujo.vistas.MostrarErrores
+import com.example.diagramasdeflujo.vistas.ReporteCiclos
+import com.example.diagramasdeflujo.vistas.ReporteErrores
+import com.example.diagramasdeflujo.vistas.ReporteOperadores
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,7 +39,15 @@ class MainActivity : ComponentActivity() {
                 }
 
                 composable(Constantes.rutaReporteErrores){
-                    MostrarErrores(navController, controlador)
+                    ReporteErrores(navController, controlador)
+                }
+
+                composable(Constantes.rutaReportesCiclos){
+                    ReporteCiclos(navController, controlador)
+                }
+
+                composable(Constantes.rutaReportesOperadores){
+                    ReporteOperadores(navController, controlador)
                 }
             }
         }

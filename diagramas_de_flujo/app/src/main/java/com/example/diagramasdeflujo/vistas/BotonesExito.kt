@@ -15,29 +15,31 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
+import com.example.diagramasdeflujo.Constantes
 import com.example.diagramasdeflujo.backend.Pseudocodigo
 
 @Composable
 fun BotonesExito(
-    navController: NavController,
-    pseudocodigo: Pseudocodigo
+    navController: NavController
 ){
     Row(
         Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceEvenly
     ){
         Button(onClick = {
-
+            navController.navigate(Constantes.rutaDiagrama)
         }) {
             Text("Diagrama")
         }
 
-        BotonReportes()
+        BotonReportes(navController)
     }
 }
 
 @Composable
-fun BotonReportes() {
+fun BotonReportes(
+    navController: NavController
+) {
 
     var expanded by remember { mutableStateOf(false) }
 
@@ -56,15 +58,15 @@ fun BotonReportes() {
                 text = { Text("Reporte operadores matemáticos") },
                 onClick = {
                     expanded = false
-                    println("Reporte estructuras de control")
+                    navController.navigate(Constantes.rutaReportesOperadores)
                 }
             )
 
             DropdownMenuItem(
-                text = { Text("Reporte léxico") },
+                text = { Text("Reporte estructuras de control") },
                 onClick = {
                     expanded = false
-                    println("Generar reporte léxico")
+                    navController.navigate(Constantes.rutaReportesCiclos)
                 }
             )
         }

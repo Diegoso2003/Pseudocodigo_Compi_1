@@ -21,6 +21,7 @@ class Mientras(var condicion:String, var bloque:Bloque) : Accion(Inst.MIENTRAS,
         acciones.add(this)
         indices[tipo.ordinal].add(this)
         indices[indices.size-1].add(this)
+        indices[indices.size-1].add(bloque)
         acciones.add(bloque)
         indices[bloque.tipo.ordinal].add(bloque)
         acciones.add(ultimo)
@@ -34,28 +35,28 @@ class Mientras(var condicion:String, var bloque:Bloque) : Accion(Inst.MIENTRAS,
         return true;
     }
 
-    override fun setFigura(figura: Figura) {
-        super.setFigura(figura)
+    override fun cambiarFigura(figura: Figura) {
+        super.cambiarFigura(figura)
         ultimo.figura = figura
     }
 
-    override fun setTipoLetra(letra: Letra) {
-        super.setTipoLetra(letra)
+    override fun cambiarTipoLetra(letra: Letra) {
+        super.cambiarTipoLetra(letra)
         ultimo.tipoLetra = letra.fuente
     }
 
-    override fun setTamañoLetra(tamaño: TextUnit) {
-        super.setTamañoLetra(tamaño)
+    override fun `cambiarTamañoLetra`(tamaño: TextUnit) {
+        super.`cambiarTamañoLetra`(tamaño)
         ultimo.tamañoLetra = tamaño
     }
 
-    override fun setColor(color: Color) {
-        super.setColor(color)
+    override fun cambiarColor(color: Color) {
+        super.cambiarColor(color)
         ultimo.color = color
     }
 
-    override fun setColorTexto(color: Color) {
-        super.setColorTexto(color)
+    override fun cambiarColorTexto(color: Color) {
+        super.cambiarColorTexto(color)
         ultimo.colorTexto = color
     }
 
@@ -63,7 +64,7 @@ class Mientras(var condicion:String, var bloque:Bloque) : Accion(Inst.MIENTRAS,
         color = Constantes.COLOR_MIENSTRAS
         ultimo.color = Constantes.COLOR_MIENSTRAS
         colorTexto = Constantes.COLOR_TEXTO_DEFECTO
-        ultimo.color = Constantes.COLOR_TEXTO_DEFECTO
+        ultimo.colorTexto = Constantes.COLOR_TEXTO_DEFECTO
         figura = Constantes.FIGURA_MIENTRAS
         ultimo.figura = Constantes.FIGURA_MIENTRAS
         tipoLetra = Constantes.TIPO_LETRA

@@ -51,15 +51,16 @@ import java.util.List;
     		MensajeError error = new MensajeError(TipoEnum.LEXICO);
             	error.setColumna(yycolumn+1);
             	error.setLinea(yyline+1);
-    		if (estado == 0 || estado == 3){
+    		if (estado == 0 || estado == 6){
     			error.setDescripcion("simbolo no reconocido en pseudocodigo");
               		error.setLexema(yytext());
-    		} else if (estado == 1){
+    		} else if (estado == 2){
     			error.setDescripcion("simbolo no reconocido en configuracion");
               		error.setLexema(yytext());
     		} else {
     			error.setDescripcion("cadena no cerrada");
     		}
+    		errores.add(error);
     	}
     	
     	public void setErrores(List<MensajeError> errores){
@@ -69,7 +70,7 @@ import java.util.List;
 %}
 
 LineTerminator = \r|\n|\r\n
-WhiteSpace = {LineTerminator} | [\t\f]
+WhiteSpace = {LineTerminator} | [\t\f ]
 Numero = [0-9]+
 Decimal = {Numero}\.{Numero}
 Hexadecimal = "H"[0-9A-F]{6}
@@ -83,31 +84,52 @@ Identifier = (_|{Letra})(_|{Letra}|{Numero})*
 	.							{ texto.append(yytext()); }
 }
 
+<YYINITIAL, INSTRUCCION, CONFIGURACION>{
 	"("							{ return symbol(sym.PARENAPER, yytext()); }
 	")"							{ return symbol(sym.PARENCERRA, yytext()); }
 	"#".*							{ /** ignorar comentario **/ }
 	{Decimal}						{ return symbol(sym.DECIMAL, Double.parseDouble(yytext())); }
 	{Numero}						{ return symbol(sym.NUMERO, Integer.parseInt(yytext())); }
+}
 
 <YYINITIAL, INSTRUCCION> {
-	"INICIO"						{ return symbol(sym.INICIO); }
-	"FINMIENTRAS"						{ return symbol(sym.FINMIENTRAS); }
-	"FINSI"							{ return symbol(sym.FINSI); }
-	"FIN"							{ return symbol(sym.FIN); }
-	"SI"							{ return symbol(sym.SI); }
-	"ENTONCES"						{ return symbol(sym.ENTONCES); }
-	"MIENTRAS"						{ return symbol(sym.MIENTRAS); }
-	"HACER"							{ return symbol(sym.HACER); }
-	"MOSTRAR"						{ yybegin(INSTRUCCION); return symbol(sym.MOSTRAR); }
-	"LEER"							{ yybegin(INSTRUCCION); return symbol(sym.LEER); }
-	"VAR"							{ yybegin(INSTRUCCION); return symbol(sym.VAR); }
-	"="							{ yybegin(INSTRUCCION); return symbol(sym.ASIGNACION, yytext()); }
-	{Identifier}						{ return symbol(sym.IDENT, yytext()); }
+	{Identifier} 						{ String lexema = yytext();
+    								switch (lexema) {
+        								case "INICIO":
+          			 	 					return symbol(sym.INICIO);
+        								case "FINMIENTRAS":
+            									return symbol(sym.FINMIENTRAS);
+									case "FINSI":
+           		 							return symbol(sym.FINSI);
+									case "FIN":
+            									return symbol(sym.FIN);
+									case "SI":
+										return symbol(sym.SI);
+									case "ENTONCES":
+										return symbol(sym.ENTONCES);
+									case "MIENTRAS":
+										return symbol(sym.MIENTRAS);
+									case "HACER":
+										return symbol(sym.HACER);
+									case "MOSTRAR":
+										yybegin(INSTRUCCION);
+										return symbol(sym.MOSTRAR);
+									case "LEER":
+										yybegin(INSTRUCCION);
+										return symbol(sym.LEER);
+									case "VAR":
+										yybegin(INSTRUCCION);
+										return symbol(sym.VAR);
+									default:
+										return symbol(sym.IDENT, lexema);
+									}
+								}
 	"=="							{ return symbol(sym.OPERARELA, yytext()); }
 	"!="							{ return symbol(sym.OPERARELA, yytext()); }
 	"<="							{ return symbol(sym.OPERARELA, yytext()); }
 	">="							{ return symbol(sym.OPERARELA, yytext()); }
 	"<"							{ return symbol(sym.OPERARELA, yytext()); }
+	"="							{ yybegin(INSTRUCCION); return symbol(sym.ASIGNACION, yytext()); }
 	">"							{ return symbol(sym.OPERARELA, yytext()); }
 	"&&"							{ return symbol(sym.OPERALOG, yytext()); }
 	"||"							{ return symbol(sym.OPERALOG, yytext()); }
@@ -145,7 +167,7 @@ Identifier = (_|{Letra})(_|{Letra}|{Numero})*
 	"ROMBO"							{ return symbol(sym.TFIGURA, Figura.ROMBO); }
 	"ARIAL"							{ return symbol(sym.TLETRA, Letra.ARIAL); }
 	"TIMES_NEW_ROMAN"					{ return symbol(sym.TLETRA, Letra.TIMES_NEW_ROMAN); }
-	"COMICS_SAM"						{ return symbol(sym.TLETRA, Letra.COMICS_SAM); }
+	"COMIC_SANS"						{ return symbol(sym.TLETRA, Letra.COMICS_SAM); }
 	"VERDANA"						{ return symbol(sym.TLETRA, Letra.VERDANA); }
 	"="							{ return symbol(sym.ASIGNACION, yytext()); }
 	"|"							{ return symbol(sym.ASIGINDI, yytext()); }

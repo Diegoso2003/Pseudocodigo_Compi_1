@@ -846,10 +846,15 @@ class CUP$DiagramaParser$actions {
 		int n1left = ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.elementAt(CUP$DiagramaParser$top-2)).left;
 		int n1right = ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.elementAt(CUP$DiagramaParser$top-2)).right;
 		List<String> n1 = (List<String>)((java_cup.runtime.Symbol) CUP$DiagramaParser$stack.elementAt(CUP$DiagramaParser$top-2)).value;
+		int n0left = ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.elementAt(CUP$DiagramaParser$top-1)).left;
+		int n0right = ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.elementAt(CUP$DiagramaParser$top-1)).right;
+		Object n0 = (Object)((java_cup.runtime.Symbol) CUP$DiagramaParser$stack.elementAt(CUP$DiagramaParser$top-1)).value;
 		int n2left = ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.peek()).left;
 		int n2right = ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.peek()).right;
 		List<String> n2 = (List<String>)((java_cup.runtime.Symbol) CUP$DiagramaParser$stack.peek()).value;
-		 n1.add(" + "); n1.addAll(n2); RESULT = n1; 
+		  
+										pseudo.agregarReporteOperador(n0left, n0right, new String[]{n1.get(n1.size()-1), "+", n2.get(0)});
+										n1.add(" + "); n1.addAll(n2); RESULT = n1;
               CUP$DiagramaParser$result = parser.getSymbolFactory().newSymbol("expr2",19, ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.elementAt(CUP$DiagramaParser$top-2)), ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.peek()), RESULT);
             }
           return CUP$DiagramaParser$result;
@@ -861,10 +866,15 @@ class CUP$DiagramaParser$actions {
 		int n1left = ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.elementAt(CUP$DiagramaParser$top-2)).left;
 		int n1right = ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.elementAt(CUP$DiagramaParser$top-2)).right;
 		List<String> n1 = (List<String>)((java_cup.runtime.Symbol) CUP$DiagramaParser$stack.elementAt(CUP$DiagramaParser$top-2)).value;
+		int n0left = ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.elementAt(CUP$DiagramaParser$top-1)).left;
+		int n0right = ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.elementAt(CUP$DiagramaParser$top-1)).right;
+		Object n0 = (Object)((java_cup.runtime.Symbol) CUP$DiagramaParser$stack.elementAt(CUP$DiagramaParser$top-1)).value;
 		int n2left = ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.peek()).left;
 		int n2right = ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.peek()).right;
 		List<String> n2 = (List<String>)((java_cup.runtime.Symbol) CUP$DiagramaParser$stack.peek()).value;
-		 n1.add(" - "); n1.addAll(n2); RESULT = n1; 
+		  
+        									pseudo.agregarReporteOperador(n0left, n0right, new String[]{n1.get(n1.size()-1), "-", n2.get(0)});
+        									n1.add(" - "); n1.addAll(n2); RESULT = n1;
               CUP$DiagramaParser$result = parser.getSymbolFactory().newSymbol("expr2",19, ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.elementAt(CUP$DiagramaParser$top-2)), ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.peek()), RESULT);
             }
           return CUP$DiagramaParser$result;
@@ -888,10 +898,15 @@ class CUP$DiagramaParser$actions {
 		int n1left = ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.elementAt(CUP$DiagramaParser$top-2)).left;
 		int n1right = ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.elementAt(CUP$DiagramaParser$top-2)).right;
 		List<String> n1 = (List<String>)((java_cup.runtime.Symbol) CUP$DiagramaParser$stack.elementAt(CUP$DiagramaParser$top-2)).value;
+		int n0left = ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.elementAt(CUP$DiagramaParser$top-1)).left;
+		int n0right = ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.elementAt(CUP$DiagramaParser$top-1)).right;
+		Object n0 = (Object)((java_cup.runtime.Symbol) CUP$DiagramaParser$stack.elementAt(CUP$DiagramaParser$top-1)).value;
 		int n2left = ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.peek()).left;
 		int n2right = ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.peek()).right;
 		List<String> n2 = (List<String>)((java_cup.runtime.Symbol) CUP$DiagramaParser$stack.peek()).value;
-		 n1.add(" * "); n1.addAll(n2); RESULT = n1; 
+		  
+										pseudo.agregarReporteOperador(n0left, n0right, new String[]{n1.get(n1.size()-1), "*", n2.get(0)});
+										n1.add(" * "); n1.addAll(n2); RESULT = n1;
               CUP$DiagramaParser$result = parser.getSymbolFactory().newSymbol("term2",20, ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.elementAt(CUP$DiagramaParser$top-2)), ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.peek()), RESULT);
             }
           return CUP$DiagramaParser$result;
@@ -903,10 +918,15 @@ class CUP$DiagramaParser$actions {
 		int n1left = ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.elementAt(CUP$DiagramaParser$top-2)).left;
 		int n1right = ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.elementAt(CUP$DiagramaParser$top-2)).right;
 		List<String> n1 = (List<String>)((java_cup.runtime.Symbol) CUP$DiagramaParser$stack.elementAt(CUP$DiagramaParser$top-2)).value;
+		int n0left = ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.elementAt(CUP$DiagramaParser$top-1)).left;
+		int n0right = ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.elementAt(CUP$DiagramaParser$top-1)).right;
+		Object n0 = (Object)((java_cup.runtime.Symbol) CUP$DiagramaParser$stack.elementAt(CUP$DiagramaParser$top-1)).value;
 		int n2left = ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.peek()).left;
 		int n2right = ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.peek()).right;
 		List<String> n2 = (List<String>)((java_cup.runtime.Symbol) CUP$DiagramaParser$stack.peek()).value;
-		 n1.add(" / "); n1.addAll(n2); RESULT = n1; 
+		 
+        									pseudo.agregarReporteOperador(n0left, n0right, new String[]{n1.get(n1.size()-1), "/", n2.get(0)});
+        									n1.add(" / "); n1.addAll(n2); RESULT = n1;
               CUP$DiagramaParser$result = parser.getSymbolFactory().newSymbol("term2",20, ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.elementAt(CUP$DiagramaParser$top-2)), ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.peek()), RESULT);
             }
           return CUP$DiagramaParser$result;
@@ -1125,7 +1145,7 @@ class CUP$DiagramaParser$actions {
 		int n1left = ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.peek()).left;
 		int n1right = ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.peek()).right;
 		String n1 = (String)((java_cup.runtime.Symbol) CUP$DiagramaParser$stack.peek()).value;
-		 RESULT = pseudo.hexaAColor("#"+n1.subString(1));
+		 RESULT = pseudo.hexaAColor("#"+n1.substring(1)); 
               CUP$DiagramaParser$result = parser.getSymbolFactory().newSymbol("color",16, ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.peek()), ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.peek()), RESULT);
             }
           return CUP$DiagramaParser$result;
@@ -1143,7 +1163,7 @@ class CUP$DiagramaParser$actions {
 		int n3left = ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.peek()).left;
 		int n3right = ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.peek()).right;
 		OperadorMat n3 = (OperadorMat)((java_cup.runtime.Symbol) CUP$DiagramaParser$stack.peek()).value;
-		 RESULT = pseudo.rgbAColor(n1.getNumero(), n2.getNumero(), n3.getNumero());
+		 RESULT = pseudo.rgbAColor(n1.getNumero(), n2.getNumero(), n3.getNumero()); 
               CUP$DiagramaParser$result = parser.getSymbolFactory().newSymbol("color",16, ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.elementAt(CUP$DiagramaParser$top-4)), ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.peek()), RESULT);
             }
           return CUP$DiagramaParser$result;
@@ -1155,11 +1175,15 @@ class CUP$DiagramaParser$actions {
 		int n1left = ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.elementAt(CUP$DiagramaParser$top-2)).left;
 		int n1right = ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.elementAt(CUP$DiagramaParser$top-2)).right;
 		OperadorMat n1 = (OperadorMat)((java_cup.runtime.Symbol) CUP$DiagramaParser$stack.elementAt(CUP$DiagramaParser$top-2)).value;
+		int n0left = ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.elementAt(CUP$DiagramaParser$top-1)).left;
+		int n0right = ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.elementAt(CUP$DiagramaParser$top-1)).right;
+		Object n0 = (Object)((java_cup.runtime.Symbol) CUP$DiagramaParser$stack.elementAt(CUP$DiagramaParser$top-1)).value;
 		int n2left = ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.peek()).left;
 		int n2right = ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.peek()).right;
 		OperadorMat n2 = (OperadorMat)((java_cup.runtime.Symbol) CUP$DiagramaParser$stack.peek()).value;
 		 RESULT = new OperadorMat(n1.getNumero() + n2.getNumero()); 
 												RESULT.setUltimo(n2.getUltimo()); RESULT.setPrimero(n1.getPrimero()); 
+										pseudo.agregarReporteOperador(n0left, n0right, new String[]{n1.getUltimo(), "+", n2.getPrimero()});
               CUP$DiagramaParser$result = parser.getSymbolFactory().newSymbol("expr",0, ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.elementAt(CUP$DiagramaParser$top-2)), ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.peek()), RESULT);
             }
           return CUP$DiagramaParser$result;
@@ -1171,11 +1195,15 @@ class CUP$DiagramaParser$actions {
 		int n1left = ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.elementAt(CUP$DiagramaParser$top-2)).left;
 		int n1right = ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.elementAt(CUP$DiagramaParser$top-2)).right;
 		OperadorMat n1 = (OperadorMat)((java_cup.runtime.Symbol) CUP$DiagramaParser$stack.elementAt(CUP$DiagramaParser$top-2)).value;
+		int n0left = ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.elementAt(CUP$DiagramaParser$top-1)).left;
+		int n0right = ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.elementAt(CUP$DiagramaParser$top-1)).right;
+		Object n0 = (Object)((java_cup.runtime.Symbol) CUP$DiagramaParser$stack.elementAt(CUP$DiagramaParser$top-1)).value;
 		int n2left = ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.peek()).left;
 		int n2right = ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.peek()).right;
 		OperadorMat n2 = (OperadorMat)((java_cup.runtime.Symbol) CUP$DiagramaParser$stack.peek()).value;
 		 RESULT = new OperadorMat(n1.getNumero() - n2.getNumero()); 
 												RESULT.setUltimo(n2.getUltimo()); RESULT.setPrimero(n1.getPrimero()); 
+										pseudo.agregarReporteOperador(n0left, n0right, new String[]{n1.getUltimo(), "-", n2.getPrimero()});
               CUP$DiagramaParser$result = parser.getSymbolFactory().newSymbol("expr",0, ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.elementAt(CUP$DiagramaParser$top-2)), ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.peek()), RESULT);
             }
           return CUP$DiagramaParser$result;
@@ -1199,11 +1227,15 @@ class CUP$DiagramaParser$actions {
 		int n1left = ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.elementAt(CUP$DiagramaParser$top-2)).left;
 		int n1right = ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.elementAt(CUP$DiagramaParser$top-2)).right;
 		OperadorMat n1 = (OperadorMat)((java_cup.runtime.Symbol) CUP$DiagramaParser$stack.elementAt(CUP$DiagramaParser$top-2)).value;
+		int n0left = ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.elementAt(CUP$DiagramaParser$top-1)).left;
+		int n0right = ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.elementAt(CUP$DiagramaParser$top-1)).right;
+		Object n0 = (Object)((java_cup.runtime.Symbol) CUP$DiagramaParser$stack.elementAt(CUP$DiagramaParser$top-1)).value;
 		int n2left = ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.peek()).left;
 		int n2right = ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.peek()).right;
 		OperadorMat n2 = (OperadorMat)((java_cup.runtime.Symbol) CUP$DiagramaParser$stack.peek()).value;
-		 RESULT = new OperadorMat(n1.getNumero() * n2.getNumero()); 
-												RESULT.setUltimo(n2.getUltimo()); RESULT.setPrimero(n1.getPrimero()); 
+		 RESULT = new OperadorMat(n1.getNumero() * n2.getNumero());
+												RESULT.setUltimo(n2.getUltimo()); RESULT.setPrimero(n1.getPrimero());
+										pseudo.agregarReporteOperador(n0left, n0right, new String[]{n1.getUltimo(), "*", n2.getPrimero()});
               CUP$DiagramaParser$result = parser.getSymbolFactory().newSymbol("term",1, ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.elementAt(CUP$DiagramaParser$top-2)), ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.peek()), RESULT);
             }
           return CUP$DiagramaParser$result;
@@ -1215,11 +1247,15 @@ class CUP$DiagramaParser$actions {
 		int n1left = ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.elementAt(CUP$DiagramaParser$top-2)).left;
 		int n1right = ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.elementAt(CUP$DiagramaParser$top-2)).right;
 		OperadorMat n1 = (OperadorMat)((java_cup.runtime.Symbol) CUP$DiagramaParser$stack.elementAt(CUP$DiagramaParser$top-2)).value;
+		int n0left = ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.elementAt(CUP$DiagramaParser$top-1)).left;
+		int n0right = ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.elementAt(CUP$DiagramaParser$top-1)).right;
+		Object n0 = (Object)((java_cup.runtime.Symbol) CUP$DiagramaParser$stack.elementAt(CUP$DiagramaParser$top-1)).value;
 		int n2left = ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.peek()).left;
 		int n2right = ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.peek()).right;
 		OperadorMat n2 = (OperadorMat)((java_cup.runtime.Symbol) CUP$DiagramaParser$stack.peek()).value;
 		 RESULT = new OperadorMat(n1.getNumero() / n2.getNumero()); 
 												RESULT.setUltimo(n2.getUltimo()); RESULT.setPrimero(n1.getPrimero()); 
+										pseudo.agregarReporteOperador(n0left, n0right, new String[]{n1.getUltimo(), "/", n2.getPrimero()});
               CUP$DiagramaParser$result = parser.getSymbolFactory().newSymbol("term",1, ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.elementAt(CUP$DiagramaParser$top-2)), ((java_cup.runtime.Symbol)CUP$DiagramaParser$stack.peek()), RESULT);
             }
           return CUP$DiagramaParser$result;

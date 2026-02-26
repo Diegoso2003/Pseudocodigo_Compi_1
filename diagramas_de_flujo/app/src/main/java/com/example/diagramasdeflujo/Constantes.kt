@@ -10,6 +10,8 @@ class Constantes {
     companion object {
         const val NOMBRE_APP = "Diagramas de flujo"
         const val rutaEditor = "editor"
+        const val rutaReportesCiclos = "reporte_ciclos"
+        const val rutaReportesOperadores = "reporte_operadores"
         const val rutaDiagrama = "diagrama"
         const val rutaReporteErrores = "reporte_errores"
         val COLOR_TEXTO_DEFECTO = Color.Black

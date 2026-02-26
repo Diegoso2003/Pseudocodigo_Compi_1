@@ -9,23 +9,23 @@ import com.example.diagramasdeflujo.enums.Letra
 
 abstract class Accion(var tipo: Inst, var figura: Figura, var color: Color) {
 
-    open fun setFigura(figura: Figura){
+    open fun cambiarFigura(figura: Figura){
         this.figura = figura
     }
 
-    open fun setTipoLetra(letra: Letra){
+    open fun cambiarTipoLetra(letra: Letra){
         this.tipoLetra = letra.fuente
     }
 
-    open fun setTamañoLetra(tamaño: TextUnit){
+    open fun `cambiarTamañoLetra`(tamaño: TextUnit){
         this.tamañoLetra = tamaño
     }
 
-    open fun setColor(color: Color){
+    open fun cambiarColor(color: Color){
         this.color = color
     }
 
-    open fun setColorTexto(color: Color){
+    open fun cambiarColorTexto(color: Color){
         this.color = color
     }
     abstract fun porDefecto()

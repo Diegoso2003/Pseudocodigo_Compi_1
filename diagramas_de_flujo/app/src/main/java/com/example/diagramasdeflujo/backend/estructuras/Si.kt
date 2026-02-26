@@ -1,5 +1,6 @@
 package com.example.diagramasdeflujo.backend.estructuras
 
+import androidx.compose.ui.graphics.Color
 import com.example.diagramasdeflujo.Constantes
 import com.example.diagramasdeflujo.enums.Figura
 import com.example.diagramasdeflujo.enums.Inst
@@ -18,6 +19,8 @@ class Si(var condicion:String, var bloque:Bloque) : Accion(Inst.SI, Constantes.F
         ultimo.color = this.color
         acciones.add(this)
         indices[tipo.ordinal].add(this)
+        indices[indices.size-1].add(this)
+        indices[indices.size-1].add(bloque)
         acciones.add(bloque)
         indices[bloque.tipo.ordinal].add(bloque)
         acciones.add(ultimo)
@@ -31,21 +34,31 @@ class Si(var condicion:String, var bloque:Bloque) : Accion(Inst.SI, Constantes.F
         return true
     }
 
-    override fun setFigura(figura: Figura) {
-        super.setFigura(figura)
+    override fun cambiarFigura(figura: Figura) {
+        super.cambiarFigura(figura)
         ultimo.figura = figura
     }
 
-    override fun setTipoLetra(letra: Letra) {
-        super.setTipoLetra(letra)
+    override fun cambiarTipoLetra(letra: Letra) {
+        super.cambiarTipoLetra(letra)
         ultimo.tipoLetra = letra.fuente
+    }
+
+    override fun cambiarColor(color: Color) {
+        super.cambiarColor(color)
+        ultimo.color = color
+    }
+
+    override fun cambiarColorTexto(color: Color) {
+        super.cambiarColorTexto(color)
+        ultimo.colorTexto = color
     }
 
     override fun porDefecto() {
         color = Constantes.COLOR_SI
         ultimo.color = Constantes.COLOR_SI
         colorTexto = Constantes.COLOR_TEXTO_DEFECTO
-        ultimo.color = Constantes.COLOR_TEXTO_DEFECTO
+        ultimo.colorTexto = Constantes.COLOR_TEXTO_DEFECTO
         figura = Constantes.FIGURA_SI
         ultimo.figura = Constantes.FIGURA_SI
         tipoLetra = Constantes.TIPO_LETRA
