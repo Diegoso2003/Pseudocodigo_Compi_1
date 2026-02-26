@@ -10,7 +10,6 @@ import com.example.diagramasdeflujo.enums.Letra;
 import com.example.diagramasdeflujo.enums.Figura;
 import com.example.diagramasdeflujo.enums.TipoEnum;
 import com.example.diagramasdeflujo.backend.MensajeError;
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -458,7 +457,7 @@ public class DiagramaLexer implements java_cup.runtime.Scanner {
 	private StringBuilder texto = new StringBuilder();
 	private int linea;
 	private int columna;
-	private List<MensajeError> errores = new ArrayList<>();
+	private List<MensajeError> errores;
 	
 	private Symbol symbol(int type){
         	return new Symbol(type, yyline+1, yycolumn+1);
@@ -496,9 +495,9 @@ public class DiagramaLexer implements java_cup.runtime.Scanner {
     		}
     	}
     	
-    	public List<MensajeError> getErrores(){
-          	return errores;
-        }
+    	public void setErrores(List<MensajeError> errores){
+    		this.errores = errores;
+    	}
 
 
 
@@ -1048,7 +1047,7 @@ public class DiagramaLexer implements java_cup.runtime.Scanner {
           // fall through
           case 91: break;
           case 25:
-            { return reportarCadena();
+            { yybegin(INSTRUCCION); return reportarCadena();
             }
           // fall through
           case 92: break;

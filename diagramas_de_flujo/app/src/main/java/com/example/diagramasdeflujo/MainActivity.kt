@@ -7,12 +7,13 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.diagramasdeflujo.vistas.AppViewModel
+import com.example.diagramasdeflujo.backend.Pseudocodigo
 import com.example.diagramasdeflujo.vistas.Editor
+import com.example.diagramasdeflujo.vistas.HacerDiagrama
+import com.example.diagramasdeflujo.vistas.MostrarErrores
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -20,14 +21,22 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val navController = rememberNavController()
-            val viewModel: AppViewModel = viewModel()
+            val controlador = Pseudocodigo()
 
             NavHost(
                 navController = navController,
                 startDestination = "editor"
             ) {
-                composable("editor") {
-                    Editor(navController, viewModel)
+                composable(Constantes.rutaEditor) {
+                    Editor(navController, controlador)
+                }
+
+                composable(Constantes.rutaDiagrama) {
+                    HacerDiagrama(navController, controlador)
+                }
+
+                composable(Constantes.rutaReporteErrores){
+                    MostrarErrores(navController, controlador)
                 }
             }
         }

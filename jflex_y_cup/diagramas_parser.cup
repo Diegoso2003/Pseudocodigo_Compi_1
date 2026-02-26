@@ -2,8 +2,11 @@ package com.example.diagramasdeflujo.analizadores;
 
 import com.example.diagramasdeflujo.enums.TipoEnum;
 import com.example.diagramasdeflujo.enums.Inst;
+import com.example.diagramasdeflujo.enums.Letra;
+import com.example.diagramasdeflujo.enums.Figura;
 import com.example.diagramasdeflujo.backend.MensajeError;
 import com.example.diagramasdeflujo.backend.Pseudocodigo;
+import com.example.diagramasdeflujo.backend.OperadorMat;
 import com.example.diagramasdeflujo.backend.estructuras.Bloque;
 import com.example.diagramasdeflujo.backend.estructuras.Mientras;
 import com.example.diagramasdeflujo.backend.estructuras.Si;
@@ -18,9 +21,9 @@ parser code {:
     private List<MensajeError> syntaxErrors;
     private Pseudocodigo pseudo;
 
-    public DiagramaParser(DiagramaLexer lex, List<MensajeError> syntaxErrors, Pseudocodigo pseudo){
+    public DiagramaParser(DiagramaLexer lex, Pseudocodigo pseudo){
         super(lex);
-        this.syntaxErrors = syntaxErrors;
+        this.syntaxErrors = pseudo.getErrores();
         this.pseudo = pseudo;
     }
 
@@ -68,6 +71,7 @@ parser code {:
             	}
             	error.setDescripcion(mssBuilder.toString());
         }
+        syntaxErrors.add(error);
     }
 
     public void report_error(String message, Object info){
@@ -99,7 +103,15 @@ parser code {:
 
     public void unrecovered_syntax_error(Symbol cur_token){
         MensajeError error = new MensajeError(TipoEnum.SINTACTICO);
-        error.setDescripcion("Error que no se puede recuperar");
+        String tokenInfo = "";
+    if (cur_token != null) {
+        tokenInfo += cur_token.left + ", " + cur_token.right;
+        // Si tiene valor asociado
+        if (cur_token.value != null) {
+            tokenInfo += " ('" + cur_token.value + "')";
+        }
+    }
+        error.setDescripcion("Error que no se puede recuperar" + tokenInfo);
         syntaxErrors.add(error);
     }
 
@@ -108,20 +120,29 @@ parser code {:
 terminal			MAS, MENOS, POR, SIGNODIVI, PARENAPER, PARENCERRA, SEPARADOR, DEFAULT, ASIGNACION, DELIMIT, ASIGINDI, VAR, MOSTRAR, LEER,
 				MIENTRAS, SI, HACER, ENTONCES, INICIO, FIN, FINMIENTRAS, FINSI, OPERALOGNEG, OPERALOG, SUMA, RESTA, MULTI, DIVI, COMA
 				;
-terminal Integer		NUMERO, COLORTEXTO, COLOR, FIGURA, LETRA, TFIGURA, TLETRA, LETRASIZE
+terminal DatosConfig		COLORTEXTO, COLOR, FIGURA, LETRA, LETRASIZE
+				;
+terminal Figura			TFIGURA
+				;
+terminal Integer		NUMERO
 				;
 terminal Double			DECIMAL
 				;
+terminal Letra			TLETRA
+				;
 terminal String			HEXADECIMAL, IDENT, CADENA, OPERARELA
 				;
-non terminal Double		expr, term, factor
+non terminal OperadorMat	expr, term, factor
 				;
 non terminal			codigo, configuracion, mientras, condicional, pseudocodigo, instrucciones, ciclo, finalmientras,
-				fincondicional, instruccion_config
+				fincondicional, instruccion_config, delimitador
 				;
+
 non terminal Bloque		bloque
 				;
-non terminal String		color, instruccion
+non terminal String		instruccion
+				;
+non terminal Object		color
 				;
 non terminal StringBuilder	condiciones, condicion
 				;
@@ -130,11 +151,12 @@ non terminal List<String> 	expr2, term2, factor2
 			
 start with codigo;
 
-codigo ::= pseudocodigo SEPARADOR configuracion
-	| error SEPARADOR configuracion
+codigo ::= pseudocodigo SEPARADOR DELIMIT configuracion
+	| error SEPARADOR DELIMIT configuracion							
 	;
 	
 pseudocodigo ::= INICIO instrucciones FIN
+	| INICIO error FIN									
 	;
 	
 instrucciones ::= instrucciones instruccion:n1							{: pseudo.agregarInstruccion(n1); :}
@@ -148,7 +170,8 @@ instruccion ::= VAR IDENT:n1 DELIMIT								{: RESULT = "VAR " + n1; :}
 	| MOSTRAR IDENT:n1 DELIMIT								{: RESULT = "MOSTRAR " + n1; :}
 	| MOSTRAR CADENA:n1 DELIMIT								{: RESULT = "MOSTRAR " + n1; :}
 	| LEER IDENT:n1 DELIMIT									{: RESULT = "LEER " + n1; :}
-	| error DELIMIT
+	| IDENT:n1 ASIGNACION expr2:n2 DELIMIT							{: RESULT = n1 + " = " + pasarATexto(n2); :}
+	| error DELIMIT										{: RESULT = "Error"; :}
 	;
 	
 ciclo ::= mientras
@@ -158,11 +181,13 @@ ciclo ::= mientras
 mientras ::= MIENTRAS:n0 PARENAPER condiciones:n1 PARENCERRA HACER bloque:n2 finalmientras	{: pseudo.agregarAccion(new Mientras(n1.toString(), n2)); 
 										pseudo.agregarReporteDeEstructura(new ReporteEstructura(Inst.MIENTRAS, n0left, n1.toString()));
 												:}
+	| MIENTRAS error finalmientras							
 	;
 	
 condicional ::= SI:n0 PARENAPER condiciones:n1 PARENCERRA ENTONCES bloque:n2 fincondicional	{: pseudo.agregarAccion(new Si(n1.toString(), n2));
-										pseudo.agregarReporteDeEstructura(new ReporteEstructura(Inst.MIENTRAS, n0left, n1.toString()));
+										pseudo.agregarReporteDeEstructura(new ReporteEstructura(Inst.SI, n0left, n1.toString()));
 												:}
+	| SI error fincondicional								
 	;
 	
 fincondicional ::= FINSI
@@ -177,7 +202,7 @@ finalmientras ::= FINMIENTRAS
 	| FIN MIENTRAS
 	;
 	
-condiciones ::= condicion:n1 OPERALOG:n2 condicion:n3						{: RESULT = n1.append(" ").append(n2).append(" ").append(n3); :}
+condiciones ::= condicion:n1 									{: RESULT = n1; :}
 	| condiciones:n1 OPERALOG:n2 condicion:n3						{: RESULT = n1.append(" ").append(n2).append(" ").append(n3); :}
 	;
 	
@@ -207,30 +232,38 @@ configuracion ::= configuracion instruccion_config
 	| instruccion_config
 	;
 	
-instruccion_config ::= DEFAULT ASIGNACION NUMERO DELIMIT
-	| COLORTEXTO ASIGNACION color ASIGINDI NUMERO DELIMIT
-	| COLOR ASIGNACION color ASIGINDI NUMERO DELIMIT
-	| FIGURA ASIGNACION TFIGURA ASIGINDI NUMERO DELIMIT
-	| LETRA ASIGNACION TLETRA ASIGINDI NUMERO DELIMIT
-	| LETRASIZE ASIGNACION expr ASIGINDI NUMERO DELIMIT
-	| error DELIMIT
+instruccion_config ::= DEFAULT ASIGNACION NUMERO:n1 delimitador					{: pseudo.porDefecto(n1); :}
+	| COLORTEXTO:n0 ASIGNACION color:n1 ASIGINDI NUMERO:n2 delimitador			{: pseudo.cambiarColorTexto(n1, n2, n0.getTipo()); :}
+	| COLOR:n0 ASIGNACION color:n1 ASIGINDI NUMERO:n2 delimitador				{: pseudo.cambiarColor(n1, n2, n0.getTipo()); :}
+	| FIGURA:n0 ASIGNACION TFIGURA:n1 ASIGINDI NUMERO:n2 delimitador			{: pseudo.cambiarFigura(n1, n2, n0.getTipo()); :}
+	| LETRA:n0 ASIGNACION TLETRA:n1 ASIGINDI NUMERO:n2 delimitador				{: pseudo.cambiarLetra(n1, n2, n0.getTipo()); :}
+	| LETRASIZE:n0 ASIGNACION expr:n1 ASIGINDI NUMERO:n2 delimitador			{: pseudo.cambiarTamaño(n1.getNumero(), n2, n0.getTipo()); :}
+	| error DELIMIT									
 	;
 	
-color ::= HEXADECIMAL
-	| expr COMA expr COMA expr
+delimitador ::= DELIMIT
+	| delimitador DELIMIT
+	;
+	
+color ::= HEXADECIMAL:n1									{: RESULT = pseudo.hexaColor("#"+n1.subString(1)); :}
+	| expr:n1 COMA expr:n2 COMA expr:n3							{: RESULT = pseudo.rgbAColor(n1.getNumero(), n2.getNumero(), n3.getNumero()); :}
 	;
 			
-expr ::= expr MAS term
-        | expr MENOS term
-        | term
+expr ::= expr:n1 MAS term:n2									{: RESULT = new OperadorMat(n1.getNumero() + n2.getNumero()); 
+												RESULT.setUltimo(n2.getUltimo()); RESULT.setPrimero(n1.getPrimero()); :}
+        | expr:n1 MENOS term:n2									{: RESULT = new OperadorMat(n1.getNumero() - n2.getNumero()); 
+												RESULT.setUltimo(n2.getUltimo()); RESULT.setPrimero(n1.getPrimero()); :}
+        | term:n1										{: RESULT = n1; :}
         ;
 
-term ::= term POR factor
-        | term SIGNODIVI factor
-        | factor
+term ::= term:n1 POR factor:n2									{: RESULT = new OperadorMat(n1.getNumero() * n2.getNumero()); 
+												RESULT.setUltimo(n2.getUltimo()); RESULT.setPrimero(n1.getPrimero()); :}
+        | term:n1 SIGNODIVI factor:n2								{: RESULT = new OperadorMat(n1.getNumero() / n2.getNumero()); 
+												RESULT.setUltimo(n2.getUltimo()); RESULT.setPrimero(n1.getPrimero()); :}
+        | factor:n1										{: RESULT = n1; :}
         ;
 
-factor ::= NUMERO
-	| DECIMAL
-        | PARENAPER expr PARENCERRA
+factor ::= NUMERO:n1										{: RESULT = new OperadorMat(n1); :}
+	| DECIMAL:n2										{: RESULT = new OperadorMat(n2); :}
+        | PARENAPER expr:n1 PARENCERRA								{: RESULT = n1; n1.setUltimo(")"); n1.setPrimero("("); :}
         ;

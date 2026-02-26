@@ -8,8 +8,8 @@ package com.example.diagramasdeflujo.analizadores;
 /** CUP generated class containing symbol constants. */
 public class sym {
   /* terminals */
-  public static final int LETRASIZE = 38;
-  public static final int NUMERO = 31;
+  public static final int NUMERO = 37;
+  public static final int LETRASIZE = 35;
   public static final int POR = 4;
   public static final int SI = 17;
   public static final int MOSTRAR = 14;
@@ -21,10 +21,10 @@ public class sym {
   public static final int FIN = 21;
   public static final int FINMIENTRAS = 22;
   public static final int DELIMIT = 11;
-  public static final int LETRA = 35;
+  public static final int LETRA = 34;
   public static final int MIENTRAS = 16;
   public static final int SUMA = 26;
-  public static final int DECIMAL = 39;
+  public static final int DECIMAL = 38;
   public static final int EOF = 0;
   public static final int SIGNODIVI = 5;
   public static final int ASIGINDI = 12;
@@ -36,9 +36,9 @@ public class sym {
   public static final int IDENT = 41;
   public static final int DIVI = 29;
   public static final int ASIGNACION = 10;
-  public static final int COLOR = 33;
+  public static final int COLOR = 32;
   public static final int PARENAPER = 6;
-  public static final int TLETRA = 37;
+  public static final int TLETRA = 39;
   public static final int DEFAULT = 9;
   public static final int OPERARELA = 43;
   public static final int LEER = 15;
@@ -48,9 +48,9 @@ public class sym {
   public static final int INICIO = 20;
   public static final int OPERALOG = 25;
   public static final int FINSI = 23;
-  public static final int COLORTEXTO = 32;
+  public static final int COLORTEXTO = 31;
   public static final int VAR = 13;
-  public static final int FIGURA = 34;
+  public static final int FIGURA = 33;
   public static final int MAS = 2;
   public static final String[] terminalNames = new String[] {
   "EOF",
@@ -84,15 +84,15 @@ public class sym {
   "MULTI",
   "DIVI",
   "COMA",
-  "NUMERO",
   "COLORTEXTO",
   "COLOR",
   "FIGURA",
   "LETRA",
-  "TFIGURA",
-  "TLETRA",
   "LETRASIZE",
+  "TFIGURA",
+  "NUMERO",
   "DECIMAL",
+  "TLETRA",
   "HEXADECIMAL",
   "IDENT",
   "CADENA",

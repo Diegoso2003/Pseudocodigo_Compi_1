@@ -78,7 +78,7 @@ Identifier = (_|{Letra})(_|{Letra}|{Numero})*
 %%
 
 <STRING> {
-	\"							{ return reportarCadena(); }
+	\"							{ yybegin(INSTRUCCION); return reportarCadena(); }
 	\n							{ reportarErrorLexico(); }
 	.							{ texto.append(yytext()); }
 }

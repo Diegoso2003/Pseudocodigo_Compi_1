@@ -24,12 +24,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import com.example.diagramasdeflujo.Constantes
+import com.example.diagramasdeflujo.backend.Pseudocodigo
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Editor(
     navController: NavController,
-    viewModel: AppViewModel
+    contralador: Pseudocodigo
 ) {
     val context = LocalContext.current
     var texto by remember { mutableStateOf("") }
@@ -43,11 +44,10 @@ fun Editor(
             }
         }
     }
-    var titulo = Constantes.NOMBRE_APP;
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("$titulo | Editor") }
+                title = { Text(Constantes.NOMBRE_APP) }
             )
         }
     ) { padding ->
@@ -75,10 +75,23 @@ fun Editor(
                     Text("Abrir archivo")
                 }
 
-                Button(onClick = {}) {
+                Button(onClick = {
+                    contralador.texto = "${texto}\n"
+                    if(!texto.isEmpty()){
+                        if(contralador.analizarCodigo()){
+                            navController.navigate(Constantes.rutaDiagrama)
+                        } else {
+                            navController.navigate(Constantes.rutaReporteErrores)
+                        }
+                    }
+                }) {
                     Text("Crear diagrama")
                 }
             }
         }
+    }
+
+    if(!contralador.texto.isEmpty()){
+        texto = contralador.texto
     }
 }
