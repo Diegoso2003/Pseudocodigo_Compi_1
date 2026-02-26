@@ -43,7 +43,6 @@ keystore.jks
 app/build/
 app/release/
 app/debug/
-*.apk
 *.aab
 captures/
 .externalNativeBuild/
